@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CourseSelectionRecordResource\Pages;
 use App\Filament\Resources\CourseSelectionRecordResource\RelationManagers;
 use App\Models\Record;
+use Exception;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
@@ -12,9 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use mysql_xdevapi\Exception;
 
 class CourseSelectionRecordResource extends Resource
 {
@@ -23,25 +22,6 @@ class CourseSelectionRecordResource extends Resource
     protected static ?string $navigationLabel = '選課作業';
 
     protected static ?string $navigationIcon = 'heroicon-o-inbox';
-    private static ?string $sql = null;
-
-    public static function getEloquentQuery(): Builder
-    {
-        if (static::$sql) {
-            try {
-                $sqlData = collect(DB::select(static::$sql));
-                $records = Record::all()->filter(function ($value, $key) use ($sqlData) {
-                    return $sqlData->contains('id', $value->id);
-                });
-
-                return $records->toQuery();
-            } catch (\Exception) {
-                return parent::getEloquentQuery();
-            }
-        } else {
-            return parent::getEloquentQuery();
-        }
-    }
 
     public static function form(Form $form): Form
     {
@@ -75,6 +55,26 @@ class CourseSelectionRecordResource extends Resource
                     ->label('成績'),
             ])
             ->filters([
+                Tables\Filters\Filter::make('sql')
+                    ->label('SQL查詢')
+                    ->form([
+                        Forms\Components\TextInput::make('sql')
+                            ->label('SQL查詢')
+                            ->default('')
+                            ->required(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if ($data['sql']) {
+                            try {
+                                $sqlData = collect(DB::select($data['sql']));
+
+                                return $query->whereIn('id', $sqlData->pluck('id'));
+                            } catch (Exception $e) {
+                            }
+                        }
+
+                        return $query;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -85,18 +85,6 @@ class CourseSelectionRecordResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
                     ->label('刪除所有'),
-            ])->headerActions([
-                Tables\Actions\Action::make('sql')
-                    ->label('SQL查詢')
-                    ->action(function (Collection $records, array $data): void {
-                        static::$sql = $data['sql'];
-                    })
-                    ->form([
-                        Forms\Components\TextInput::make('sql')
-                            ->label('SQL查詢')
-                            ->default('SELECT * FROM course_selection_records;')
-                            ->required(),
-                    ]),
             ]);
     }
 
