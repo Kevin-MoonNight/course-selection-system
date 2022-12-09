@@ -103,7 +103,8 @@ class CourseSelectionRecordResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CourseRelationManager::class,
+            RelationManagers\StudentRelationManager::class,
         ];
     }
 
