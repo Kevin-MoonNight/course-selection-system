@@ -33,7 +33,7 @@ class DepartmentResource extends Resource
                     ->label('系名')
                     ->required()
                     ->maxLength(10),
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('chair')
                     ->label('系主任')
                     ->required()
                     ->maxLength(4),
