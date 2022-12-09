@@ -68,7 +68,8 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\DepartmentRelationManager::class,
+            RelationManagers\RecordsRelationManager::class,
         ];
     }
 
