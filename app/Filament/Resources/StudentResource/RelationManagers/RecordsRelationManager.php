@@ -16,19 +16,20 @@ class RecordsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'course.name';
 
-    protected static ?string $label = '所有選課';
+    protected static ?string $title = '所有選課';
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('course.id')
+                    ->label('課號'),
                 Tables\Columns\TextColumn::make('course.name')
                     ->label('課程'),
                 Tables\Columns\TextColumn::make('grade')

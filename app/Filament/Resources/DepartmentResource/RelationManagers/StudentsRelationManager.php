@@ -16,7 +16,7 @@ class StudentsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $label = '所有學生';
+    protected static ?string $title = '所有學生';
 
     public static function form(Form $form): Form
     {

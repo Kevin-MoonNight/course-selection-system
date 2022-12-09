@@ -16,20 +16,24 @@ class DepartmentRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $label = '所屬系所';
+    protected static ?string $title = '所屬系所';
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('系號'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('系名'),
+                Tables\Columns\TextColumn::make('chair')
+                    ->label('系主任'),
             ]);
     }
 }
